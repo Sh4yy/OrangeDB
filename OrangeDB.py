@@ -100,3 +100,54 @@ class Orange:
         :returns: True if key exists
         """
         return key in self._db
+
+    def pop(self, key, default=None):
+        """
+        pop an item from the database
+        :param key: targeted key
+        :param default: default value
+        :returns: value or default
+        """
+        value = self._db.pop(key, default)
+        self.dump(force=False)
+        return value
+
+    def copy(self):
+        """make a copy of the database's dictionary"""
+        return self._db.copy()
+
+    def keys(self):
+        """:returns: a list of the keys in the database"""
+        return self._db.keys()
+
+    def values(self):
+        """:returns: a list of the values in the database"""
+        return self._db.values()
+
+    def items(self):
+        """:returns: returns a list of tuples of key values"""
+        return self._db.items()
+
+    def __setitem__(self, key, value):
+        """set a new item to the database"""
+        return self.set(key, value)
+
+    def __getitem__(self, key):
+        """get an item from the database"""
+        return self.get(key)
+
+    def __len__(self):
+        """get the size of the database"""
+        return len(self._db)
+
+    def __delitem__(self, key):
+        """delete an item from the database"""
+        return self.delete(key)
+
+    def __iter__(self):
+        """make an iterable from the database"""
+        return iter(self._db)
+
+    def __contains__(self, key):
+        """check whether database contains a key"""
+        return self.has(key)
