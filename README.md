@@ -1,4 +1,4 @@
-# Orange DB 
+![Frame](https://user-images.githubusercontent.com/23535123/55519457-e965b600-5645-11e9-857b-cf47dc99f160.png)
 
 A simple and  lightweight key-value based database.
 Based on Python's json library.
