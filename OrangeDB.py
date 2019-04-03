@@ -31,14 +31,17 @@ class Orange:
             self._db = dict()
         return True
 
-    def dump(self, force=True):
+    def dump(self, force=True, path=None):
         """
         dumps the current database into the file
         :param force: if set to true would ignore _auto_dump value
+        :param path: optional path could also be provided
+        :returns: True on success
         """
         if force or self._auto_dump:
+            path = os.path.expanduser(path) if path else self._file_path
             thread = Thread(target=json.dump,
-                            args=(self._db, open(self._file_path, "w")))
+                            args=(self._db, open(path, "w")))
             thread.start()
             thread.join()
             return True
