@@ -115,6 +115,56 @@ class Orange:
         self.dump(force=False)
         return value
 
+    def incrby(self, key, increment):
+        """
+        incremenet the interger value of the given field
+        by the value of the given increment
+        :param key: key of the given field
+        :param incremenet: increment value
+        :returns: True on success
+        """
+        if key not in self._db:
+            return False
+
+        value = self.get(key)
+        if isinstance(value, int):
+            value += increment
+            self.set(key, value)
+            return True
+
+        return False
+
+    def mget(self, keys, default=None):
+        """
+        get the values of the given fields
+        in the same order as the keys
+        :param keys: a list of the keys
+        :param default: default value when key does not exists
+        :returns: ordered list of the values
+        """
+        return [self.get(key, default) for key in keys]
+
+    def setnx(self, key, value):
+        """
+        set the value for the given key only if the
+        key does not already exits in the database
+        :param key: targeted key
+        :param value: associated value
+        :returns: True if value was set
+        """
+        if key in self._db:
+            return False
+
+        self.set(key, value)
+        return True
+
+    # TODO LPOP
+    # TODO LREM
+    # TODO LPUSH
+    # TODO LRANGE
+    # TODO RPOP
+    # TODO RPUSH
+
     def copy(self):
         """make a copy of the database's dictionary"""
         return self._db.copy()
