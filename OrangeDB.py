@@ -42,6 +42,7 @@ class OrangeBase:
             return False
 
         del self._db[key]
+        self.dump(force=False)
         return True
 
     def clear(self):
@@ -122,7 +123,6 @@ class OrangeBase:
         :returns: child database instance
         """
         return OrangeChild(self, path)
-
 
     def copy(self):
         """make a copy of the database's dictionary"""
