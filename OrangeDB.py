@@ -3,50 +3,7 @@ import os
 from threading import Thread
 
 
-class Orange:
-
-    def __init__(self, file_path, auto_dump=True):
-        """
-        initialize a new Orange database
-        :param file_path: path to the db file
-        :param auto_dump: automatically store db on updates
-        """
-        self._file_path = os.path.expanduser(file_path)
-        self._auto_dump = auto_dump
-        self._db = None
-        self._load()
-
-    def _load(self):
-        """
-        load the database from local storage
-        :returns: True on success
-        """
-        if os.path.exists(self._file_path):
-            try:
-                self._db = json.load(open(self._file_path, "r"))
-            except ValueError:
-                # in case the file is empty
-                self._db = dict()
-        else:
-            self._db = dict()
-        return True
-
-    def dump(self, force=True, path=None):
-        """
-        dumps the current database into the file
-        :param force: if set to true would ignore _auto_dump value
-        :param path: optional path could also be provided
-        :returns: True on success
-        """
-        if force or self._auto_dump:
-            path = os.path.expanduser(path) if path else self._file_path
-            thread = Thread(target=json.dump,
-                            args=(self._db, open(path, "w")))
-            thread.start()
-            thread.join()
-            return True
-
-        return False
+class OrangeBase:
 
     def get(self, key, default=None):
         """
@@ -158,12 +115,14 @@ class Orange:
         self.set(key, value)
         return True
 
-    # TODO LPOP
-    # TODO LREM
-    # TODO LPUSH
-    # TODO LRANGE
-    # TODO RPOP
-    # TODO RPUSH
+    def child(self, path):
+        """
+        initialize a new child database
+        :param path: url like path for the child database
+        :returns: child database instance
+        """
+        return OrangeChild(self, path)
+
 
     def copy(self):
         """make a copy of the database's dictionary"""
@@ -204,3 +163,96 @@ class Orange:
     def __contains__(self, key):
         """check whether database contains a key"""
         return self.has(key)
+
+
+class Orange(OrangeBase):
+
+    def __init__(self, file_path, auto_dump=True, load=True):
+        """
+        initialize a new Orange database
+        :param file_path: path to the db file
+        :param auto_dump: automatically store db on updates
+        :param load: will load database if is True
+        """
+        self._file_path = os.path.expanduser(file_path)
+        self._auto_dump = auto_dump
+        self._db = None
+        if load:
+            self._load()
+
+    def _load(self):
+        """
+        load the database from local storage
+        :returns: True on success
+        """
+        if os.path.exists(self._file_path):
+            try:
+                self._db = json.load(open(self._file_path, "r"))
+            except ValueError:
+                # in case the file is empty
+                self._db = dict()
+        else:
+            self._db = dict()
+        return True
+
+    def dump(self, force=True, path=None):
+        """
+        dumps the current database into the file
+        :param force: if set to true would ignore _auto_dump value
+        :param path: optional path could also be provided
+        :returns: True on success
+        """
+        if force or self._auto_dump:
+            path = os.path.expanduser(path) if path else self._file_path
+            thread = Thread(target=json.dump,
+                            args=(self._db, open(path, "w")))
+            thread.start()
+            thread.join()
+            return True
+
+        return False
+
+
+class OrangeChild(OrangeBase):
+
+    def __init__(self, parent, path):
+        """
+        initialize a new OrangeDB Child
+        :param parent: parent Database
+        :param path: child path, url formatted
+        """
+        self._path = OrangeChild._parse_path(path)
+        if not self._path:
+            raise Exception("path is not valid")
+
+        self._parent = parent
+        self._parent_db = None
+
+    @staticmethod
+    def _parse_path(path):
+        """ parses the path """
+        if path.startswith('/'):
+            path = path[1:]
+        if path.endswith('/'):
+            path = path[:-1]
+
+        return path.split('/')
+
+    def _load(self):
+        raise Exception('this method is not allowed')
+
+    @property
+    def _db(self):
+        """ child database property """
+        if not self._parent_db:
+            parent_db = self._parent._db
+            for div in self._path:
+                if div not in parent_db:
+                    parent_db[div] = dict()
+                parent_db = parent_db[div]
+            self._parent_db = parent_db
+        return self._parent_db
+
+    def dump(self, *args, **kwargs):
+        """ dumpt the child database """
+        return self._parent.dump(*args, **kwargs)

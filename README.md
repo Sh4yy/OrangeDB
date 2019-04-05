@@ -8,7 +8,7 @@ Based on Python's json library and inspired by PickleDB and Redis.
 from OrangeDB import Orange
 
 # initialize a new database
-db = Orange('mydata.db', auto_dump=True)
+db = Orange('database.orng', auto_dump=True)
 
 # set a new value to a key
 db.set('name', 'Shayan')
@@ -22,6 +22,20 @@ db.delete('name')
 # check whether a key exists
 db.has('name')
 
+# create a child database
+users = db.child('app/users/')
+users.set('sh4yy', {'name': 'Shayan'})
+
 # dump the database to the file
 db.dump()
 ```
+
+## Todo
+- LREM
+- LPUSH
+- LRANGE
+- RPOP
+- RPUSH
+
+### Notes
+Why Orange? It's the new theme for my projects, to be named after fruits!
