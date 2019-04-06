@@ -8,26 +8,32 @@ Based on Python's json library and inspired by PickleDB and Redis.
 from OrangeDB import Orange
 
 # initialize a new database
-db = Orange('database.orng', auto_dump=True)
+db = Orange('database.orng')
 
 # set a new value to a key
 db.set('name', 'Shayan')
+>>> True
 
 # get the value set for a key
 db.get('name', default='Unknown')
+>>> 'Shayan'
 
 # delete the value set for the key
 db.delete('name')
+>>> True
 
 # check whether a key exists
 db.has('name')
+>>> False
 
 # create a child database
 users = db.child('app/users/')
 users.set('sh4yy', {'name': 'Shayan'})
+>>> True
 
 # dump the database to the file
 db.dump()
+>>> True
 ```
 
 ## Todo
