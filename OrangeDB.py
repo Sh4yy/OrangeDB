@@ -41,18 +41,32 @@ class OrangeBase:
 
         return self._db[key]
 
-    def set(self, key, value, override=True):
+    def set(self, key, value, overwrite=True, dump=True):
         """
         set a new value for the given key
         :param key: targeted key
         :param value: associated value
-        :param override: would not override if set to false
+        :param overwrite: would not overwrite if set to False
+        :param dump: would not dump if set to True, for bulk set
         :returns True: on success
         """
-        if not override and key in self._db:
+        if not overwrite and key in self._db:
             return False
 
         self._db[key] = value
+        self.dump(force=False)
+        return True
+
+    def setm(self, *args, overwrite=True):
+        """
+        set many new value and keys
+        :param items: (key, value) tuples
+        :param overwrite: would not overwrite if set to False
+        :returns: True on success
+        """
+        for key, value in args:
+            self.set(key, value, overwrite, False)
+
         self.dump(force=False)
         return True
 
