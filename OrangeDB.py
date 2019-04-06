@@ -148,6 +148,112 @@ class OrangeBase:
 		"""
 		return OrangeChild(self, path)
 
+	def lcreate(self, key):
+		"""
+		create a new list
+		:param key: targeted key
+		:returns: True on success
+		"""
+		return self.set(key, list())
+
+	def lgetall(self, key):
+		"""
+		get entire list
+		:param key: list's key
+		:returns: target list
+		"""
+		return self[key]
+
+	def lget(self, key, index):
+		"""
+		get specific index from list
+		:param key: list's key
+		:param index: value's index
+		:returns: targeted value
+		"""
+		return self[key][index]
+
+	def llen(self, key):
+		"""
+		get list's size
+		:param key: list's key
+		:returns: list's size
+		"""
+		return len(self[key])
+
+	def lappend(self, key, value):
+		"""
+		append a new value to a list
+		:param key: list's key
+		:param value: new value
+		:returns: True on success
+		"""
+		self._db[key].append(value)
+		self.dump(force=False)
+		return True
+
+	def ldellist(self, key):
+		"""
+		delete a list from the database
+		:param key: list's key
+		:returns: list's lenght
+		"""
+		length = len(self.get(key))
+		del self[key]
+		return length
+
+	def ldelvalue(self, key, value):
+		"""
+		delete a value from list
+		:param key: list's key
+		:param value: targetd value
+		:returns: True on success
+		"""
+		self[key].remove(value)
+		self.dump(force=False)
+		return True
+
+	def ldelindex(self, key, index):
+		"""
+		delete a value from list by its index
+		:param key: list's key
+		:param index: value's index in list
+		:returns: True on success
+		"""
+		del self[key][index]
+		self.dump(force=False)
+		return True
+
+	def lhas(self, key, value):
+		"""
+		check whether a value exists in a list
+		:param key: list's key
+		:param value: targeted value
+		:returns: True if exits
+		"""
+		return value in self[key]
+
+	def lextend(self, key, sec):
+		"""
+		extend the list with a sequence
+		:param key; list's key
+		:param sec: new sequence
+		:returns: True on success
+		"""
+		self[key].extend(sec)
+		self.dump(force=False)
+		return True
+
+	def lpop(self, key):
+		"""
+		pop the last value in the list
+		:param key: list's key
+		:returns: popped value from list
+		"""
+		val = self[key].pop()
+		self.dump(force=False)
+		return val
+
 	def copy(self):
 		"""make a copy of the database's dictionary"""
 		return self._db.copy()
@@ -262,3 +368,5 @@ class OrangeChild(OrangeBase):
 		self.dump(force=False)
 		self._load_child_db()
 		return True
+
+
