@@ -38,6 +38,7 @@ db.dump()
 
 ## Todo
 - Dictionary Methods
+- Expiring Keys (Async and Sync)
 
 ### Notes
 Why Orange? It's the new theme for my projects, to be named after fruits!
